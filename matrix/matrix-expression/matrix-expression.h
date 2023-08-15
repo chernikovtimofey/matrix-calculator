@@ -6,14 +6,16 @@
 
 // abstract superclass template representing expression with matrices
 // E - subclass of MatrixExpression
-template<typename E>
+template<typename T, typename E>
 class MatrixExpression {
 public:
+    using value_type = T;
+
     // type of elements in expression obtained by evaluating expression
-    static constexpr bool has_data = E::has_data;
+    static constexpr bool has_data = false;
 
     // access element in n-th row and m-th column of expression obtained by evaluating expression
-    auto operator[](std::size_t n, std::size_t m) const;
+    T operator[](std::size_t n, std::size_t m) const;
 
     // getting size of expression obtained by evaluating expression
     std::size_t n_size() const;
@@ -21,107 +23,116 @@ public:
 };
 
 // throw exception if matrices are not match by rows, columns or columns-rows respectively
-template<typename T>
-void check_n(const MatrixExpression<T> &first, const MatrixExpression<T> &second);
+template<typename T1, typename E1, typename T2, typename E2>
+void check_n(const MatrixExpression<T1, E1> &first, const MatrixExpression<T2, E2> &second);
 
-template<typename T>
-void check_m(const MatrixExpression<T> &first, const MatrixExpression<T> &second);
+template<typename T1, typename E1, typename T2, typename E2>
+void check_m(const MatrixExpression<T1, E1> &first, const MatrixExpression<T2, E2> &second);
 
-template<typename T>
-void check_mn(const MatrixExpression<T> &first, const MatrixExpression<T> &second);
+template<typename T1, typename E1, typename T2, typename E2>
+void check_mn(const MatrixExpression<T1, E1> &first, const MatrixExpression<T2, E2> &second);
 
 // class template representing negation operation
 // E - type of expression
-template<typename E>
-class Negation : public MatrixExpression<Negation<E>> {
+template<typename T, typename E>
+class Negation : public MatrixExpression<T, Negation<T, E>> {
 private:
     std::conditional_t<E::has_data, const E&, E> expression;
 
 public:
-    auto operator[](std::size_t n, std::size_t m) const;
+    T operator[](std::size_t n, std::size_t m) const;
 
     std::size_t n_size() const;
     std::size_t m_size() const;
 
-    explicit Negation(const MatrixExpression<E>& expression_);
+    explicit Negation(const MatrixExpression<T, E>& expression_);
 };
 
 // class representing sum operation
 // E1, E2 - types of expressions
-template<typename E1, typename E2>
-class Summation : public MatrixExpression<Summation<E1, E2>> {
+template<typename T, typename E1, typename E2>
+class Summation : public MatrixExpression<T, Summation<T, E1, E2>> {
 private:
     std::conditional_t<E1::has_data, const E1&, E1> first;
     std::conditional_t<E2::has_data, const E2&, E2> second;
 public:
-    auto operator[](std::size_t n, std::size_t m) const;
+    T operator[](std::size_t n, std::size_t m) const;
 
     std::size_t n_size() const;
     std::size_t m_size() const;
 
-    Summation(const MatrixExpression<E1>& first_, const MatrixExpression<E2>& second);
+    template<typename T1, typename T2>
+    Summation(const MatrixExpression<T1, E1> &first, const MatrixExpression<T2, E2> &second);
 };
 
-template<typename E1, typename E2>
-class Substruction : public MatrixExpression<Substruction<E1, E2>> {
+template<typename T, typename E1, typename E2>
+class Substruction : public MatrixExpression<T, Substruction<T, E1, E2>> {
 private:
-    std::conditional_t<MatrixExpression<E1>::has_data, const E1&, E1> first;
-    std::conditional_t<MatrixExpression<E2>::has_data, const E2&, E2> second;
+    std::conditional_t<E1::has_data, const E1&, E1> first;
+    std::conditional_t<E2::has_data, const E2&, E2> second;
 
 public:
-    auto operator[](std::size_t n, std::size_t m) const;
+    T operator[](std::size_t n, std::size_t m) const;
 
     std::size_t n_size() const;
     std::size_t m_size() const;
 
-    Substruction(const MatrixExpression<E1> &first, const MatrixExpression<E2> &second);
+    template<typename T1, typename T2>
+    Substruction(const MatrixExpression<T1, E1> &first, const MatrixExpression<T2, E2> &second);
 };
 
-template<typename E1, typename E2>
-class Product : public MatrixExpression<Product<E1, E2>> {
+template<typename T, typename E1, typename E2>
+class Product : public MatrixExpression<T, Product<T, E1, E2>> {
 private:
-    std::conditional_t<MatrixExpression<E1>::has_data, E1&, E1> first;
-    std::conditional_t<MatrixExpression<E2>::has_data, E2&, E2> second;
+    std::conditional_t<E1::has_data, E1&, E1> first;
+    std::conditional_t<E2::has_data, E2&, E2> second;
 
 public:
-    auto operator[](std::size_t n, std::size_t m) const;
+    T operator[](std::size_t n, std::size_t m) const;
 
     std::size_t n_size() const;
     std::size_t m_size() const;
 
-    Product(const MatrixExpression<E1> &first, const MatrixExpression<E2> &second);
+    template<typename T1, typename T2>
+    Product(const MatrixExpression<T1, E1> &first, const MatrixExpression<T2, E2> &second);
 };
 
-template<typename E, typename V>
-class ScalarProduct : public MatrixExpression<ScalarProduct<E, V>> {
+template<typename T, typename E>
+class ScalarProduct : public MatrixExpression<T, ScalarProduct<T, E>> {
 private:
     std::conditional_t<E::has_data, E&, E> expression;
-    V val;
+    T val;
 public:
     auto operator[](std::size_t n, std::size_t m) const;
 
     std::size_t n_size() const;
     std::size_t m_size() const;
 
-    ScalarProduct(const MatrixExpression<E> &expression, V val);
+    ScalarProduct(const MatrixExpression<T, E> &expression, T val);
 };
 
 // expressions operation functions //
 
-template<typename E>
-auto operator-(const MatrixExpression<E> &expression);
+template<typename T, typename E>
+Negation<T, E> operator-(const MatrixExpression<T, E> &expression);
 
-template<typename E1, typename E2>
-auto operator+(const MatrixExpression<E1> &first, const MatrixExpression<E2> &second);
+template<typename T, typename E1, typename E2>
+Summation<T, E1, E2> operator+(const MatrixExpression<T, E1> &first, const MatrixExpression<T, E2> &second);
 
-template<typename E1, typename E2>
-auto operator-(const MatrixExpression<E1> &first, const MatrixExpression<E2> &second);
+template<typename T, typename E1, typename E2>
+Substruction<T, E1, E2> operator-(const MatrixExpression<T, E1> &first, const MatrixExpression<T, E2> &second);
 
-template<typename E1, typename E2>
-auto operator*(const MatrixExpression<E1> &first, const MatrixExpression<E2> &second);
+template<typename T, typename E1, typename E2>
+Product<T, E1, E2> operator*(const MatrixExpression<T, E1> &first, const MatrixExpression<T, E2> &second);
 
-template<typename E>
-std::ostream& operator<<(std::ostream &os, const MatrixExpression<E> &matrix);
+template<typename T, typename E>
+ScalarProduct<T, E> operator*(const MatrixExpression<T, E> &expression, T val);
+
+template<typename T, typename E>
+ScalarProduct<T, E> operator*(T val, const MatrixExpression<T, E> &expression);
+
+template<typename T, typename E>
+std::ostream& operator<<(std::ostream &os, const MatrixExpression<T, E> &matrix);
 
 #include "matrix-expression.tpp"
 #endif //MATRIX_CALCULATOR_ABSTRACTMATRIX_H

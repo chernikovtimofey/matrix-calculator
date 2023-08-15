@@ -31,26 +31,31 @@ void arithmetic_test() {
         }
     }
 
-    std::cout << "matrix1:" << '\n';
-    auto matrix1 = ConstSubmatrix(data, Slice(0, 5));
-    std::cout << matrix1;
+    std::cout << "m1:" << '\n';
+    auto m1 = ConstSubmatrix(data, Slice(0, 5));
+    std::cout << m1;
     std::cout << '\n' << '\n';
-    std::cout << "matrix2:" << '\n';
-    auto matrix2 = ConstSubmatrix(data, Slice(5, 10));
-    std::cout << matrix2;
+    std::cout << "m2:" << '\n';
+    auto m2 = ConstSubmatrix(data, Slice(5, 10));
+    std::cout << m2;
     std::cout << '\n' << '\n';
-    std::cout << "negative matrix1:" << '\n';
-    std::cout << -matrix1;
+    std::cout << "negative m1:" << '\n';
+    std::cout << -m1;
     std::cout << '\n' << '\n';
-    std::cout << "sum of matrix1 and matrix2:" << '\n';
-    std::cout << matrix1 + matrix2;
+    std::cout << "sum of m1 and m2:" << '\n';
+    std::cout << m1 + m2;
     std::cout << '\n' << '\n';
-    std::cout << "substruction of matrix2 and matrix1:" << '\n';
-    std::cout << matrix2 - matrix1;
+    std::cout << "substruction of m2 and m1:" << '\n';
+    std::cout << m2 - m1;
     std::cout << '\n' << '\n';
-    std::cout << "product of matrix1 and matrix2:" << '\n';
-    std::cout << matrix1 * matrix2;
+    std::cout << "product of m1 and m2:" << '\n';
+    std::cout << m1 * m2;
     std::cout << '\n' << '\n';
+    std::cout << "product of m1 and 5.5:" << '\n';
+    std::cout << m1 * 5.5;
+    std::cout << '\n' << '\n';
+    std::cout << "-(m1 + m2 * m1 - m2 * 1.3):" << '\n';
+    std::cout << -(m1 + m2 * m1 - m2 * 1.3);
 }
 
 //void Submatrix_test() {
