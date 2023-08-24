@@ -1,4 +1,5 @@
 #include <format>
+#include <iomanip>
 
 // MatrixExpression implementation //
 
@@ -157,6 +158,27 @@ template<typename T, typename E, typename V>
 ScalarProduct<T, E, V>::ScalarProduct(const MatrixExpression<T, E> &expression_, V val_) :
 expression(static_cast<const E&>(expression_)), val(val_) {}
 
+// ScalarDivision implementation //
+
+template<typename T, typename E, typename V>
+T ScalarDivision<T, E, V>::operator[](std::size_t i, std::size_t j) const {
+    return expression[i, j] / val;
+}
+
+template<typename T, typename E, typename V>
+std::size_t ScalarDivision<T, E, V>::get_n() const {
+    return expression.get_n();
+}
+
+template<typename T, typename E, typename V>
+std::size_t ScalarDivision<T, E, V>::get_m() const {
+    return expression.get_m();
+}
+
+template<typename T, typename E, typename V>
+ScalarDivision<T, E, V>::ScalarDivision(const MatrixExpression<T, E> &expression_, V val_) :
+expression(static_cast<const E&>(expression_)), val(val_) {}
+
 // expression operations functions implementation //
 
 template<typename T, typename E>
@@ -190,29 +212,40 @@ ScalarProduct<T, E, T> operator*(T val, const MatrixExpression<T, E> &expression
 }
 
 template<typename T, typename E>
-std::ostream& operator<<(std::ostream &ostream, const MatrixExpression<T, E> &matrix) {
-    if (matrix.get_n() > 0) {
-        ostream << matrix.get_n() << " " << matrix.get_m() << '\n';
+ScalarDivision<T, E, T> operator/(const MatrixExpression<T, E> &expression, T val) {
+    return ScalarDivision<T, E, T>(expression, val);
+}
 
-        int max_length = 1;
-        for (int i = 0; i < matrix.get_n(); ++i) {
-            for (int j = 0; j < matrix.get_m(); ++j) {
-                int length = std::format("{}", matrix[i, j]).length();
-                if (length > max_length) {
-                    max_length = length;
+template<typename T>
+std::size_t number_length(T num) {
+    std::stringstream ss;
+    ss << num;
+    return ss.str().length();
+}
+
+template<typename T, typename E>
+std::ostream& operator<<(std::ostream &ostream, const MatrixExpression<T, E> &matrix) {
+    ostream << matrix.get_n() << " " << matrix.get_m() << '\n';
+    if (matrix.get_n() > 0) {
+        std::vector<std::size_t> columns_length = std::vector<std::size_t>(matrix.get_m());
+        for (int j = 0; j < matrix.get_m(); ++j) {
+            std::size_t column_length = 0;
+            for (int i = 0; i < matrix.get_n(); ++i) {
+                std::size_t element_length = number_length(matrix[i, j]);
+                if (element_length > column_length) {
+                    column_length = element_length;
                 }
             }
+            columns_length[j] = column_length;
         }
 
-        int element_space = max_length + 2;
-        ostream << std::format("{:<{}}", matrix[0, 0], element_space);
-        for (int j = 1; j < matrix.get_m(); ++j) {
-            ostream << std::format("{:<{}}", matrix[0, j], element_space);
+        for (int j = 0; j < matrix.get_m(); ++j) {
+            ostream << std::setw(columns_length[j] + 3) << std::left << matrix[0, j];
         }
         for (int i = 1; i < matrix.get_n(); ++i) {
-            ostream << '\n' << std::format("{:<{}}", matrix[i, 0], element_space);
-            for (int j = 1; j < matrix.get_m(); ++j) {
-                ostream << std::format("{:<{}}", matrix[i, j], element_space);
+            ostream << '\n';
+            for (int j = 0; j < matrix.get_m(); ++j) {
+                ostream << std::setw(columns_length[j]+ 3) << std::left << matrix[i, j];
             }
         }
     }

@@ -63,13 +63,13 @@ class ConstSubmatrix : public AbstractSubmatrix<const std::vector<std::vector<T>
 };
 
 // Submatrix with possibility of changing elements of matrix in this submatrix
-// T1 - type of elements of original matrix
+// T - type of elements of original matrix
 template<typename T1>
 class Submatrix : public AbstractSubmatrix<std::vector<std::vector<T1>>, Submatrix<T1>> {
     using AbstractSubmatrix<std::vector<std::vector<T1>>, Submatrix<T1>>::AbstractSubmatrix;
 public:
     // access to elements of original matrix in this submatrix
-    T1& operator[](std::size_t n, std::size_t m);
+    T1& operator[](std::size_t i, std::size_t j);
 
     // operation of substitution elements of matrix in this submatrix by elements of "other"
     template<typename T2, typename E2>
@@ -85,15 +85,17 @@ public:
     Submatrix operator*=(const MatrixExpression<T2, E2> &other);
 
     Submatrix operator*=(T1 val);
+
+    Submatrix operator/=(T1 val);
 };
 
 // class representing matrix
-// T1 - type of elements in matrix
+// T - type of elements in matrix
 template<typename T1>
 class Matrix : public MatrixExpression<T1, Matrix<T1>> {
 private:
-    std::size_t width;
-    std::size_t height;
+    std::size_t n;
+    std::size_t m;
 
 protected:
     std::vector<std::vector<T1>> data;
@@ -101,14 +103,14 @@ protected:
 public:
     static constexpr bool has_data = true;
 
-    T1 operator[](std::size_t n, std::size_t m) const;
-    T1& operator[](std::size_t n, std::size_t m);
+    T1 operator[](std::size_t i, std::size_t j) const;
+    T1& operator[](std::size_t i, std::size_t j);
 
-    // operation of access to elements of matrix
-    ConstSubmatrix<T1> operator[](std::size_t n) const;
-    Submatrix<T1> operator[](std::size_t n);
+    // access to elements of matrix
+    ConstSubmatrix<T1> operator[](std::size_t i) const;
+    Submatrix<T1> operator[](std::size_t i);
 
-    // operations of access to elements of matrix by submatrix
+    // access to elements of matrix by submatrix
     ConstSubmatrix<T1> operator[](Slice n_slice) const;
     Submatrix<T1> operator[](Slice n_slice);
 
@@ -139,16 +141,18 @@ public:
 
     Matrix& operator*=(T1 val);
 
+    Matrix& operator/=(T1 val);
+
     Matrix();
     explicit Matrix(std::size_t size);
     Matrix(std::size_t row_count, std::size_t column_count);
     Matrix(const std::vector<std::vector<T1>> &data);
 
-    template<typename T, typename E>
-    Matrix(const MatrixExpression<T, E> &expression);
+    template<typename T2, typename E2>
+    Matrix(const MatrixExpression<T2, E2> &expression);
 
-    template<class T>
-    friend std::istream& operator>>(std::istream &istream, Matrix<T> &matrix);
+    template<typename T>
+    friend std::istream& operator>>(std::istream &istream, Matrix<T1> &matrix);
 };
 
 #include "matrix.tpp"

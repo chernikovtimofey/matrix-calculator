@@ -55,6 +55,9 @@ void arithmetic_test() {
     std::cout << "m1 * 5.5:" << '\n';
     std::cout << m1 * 5.5;
     std::cout << '\n' << '\n';
+    std::cout << "m1 / 3.3:" << '\n';
+    std::cout << m1 / 3.3;
+    std::cout << '\n' << '\n';
     std::cout << "-(m1 + m2 * m1 - m2 * 1.3):" << '\n';
     std::cout << -(m1 + m2 * m1 - m2 * 1.3);
 }

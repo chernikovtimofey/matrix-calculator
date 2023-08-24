@@ -49,7 +49,7 @@ public:
     std::size_t get_n() const;
     std::size_t get_m() const;
 
-    explicit Negation(const MatrixExpression<T, E>& expression_);
+    explicit Negation(const MatrixExpression<T, E>& expression);
 };
 
 // class representing summation operation
@@ -124,7 +124,7 @@ private:
     std::conditional_t<E::has_data, const E&, E> expression;
     V val;
 public:
-    // access element in i-th row and j-th column of matrix obtained by evaluating product of the expression and scalar
+    // access element in i-th row and j-th column of matrix obtained by evaluating product of the expression by scalar
     T operator[](std::size_t i, std::size_t j) const;
 
     // getting size of matrix obtained by evaluating product of the expression and scalar
@@ -132,6 +132,27 @@ public:
     std::size_t get_m() const;
 
     ScalarProduct(const MatrixExpression<T, E> &expression, V val);
+};
+
+// class representing division of matrix by scalar
+// T - type of element of matrix obtained by evaluating matrix-scalar division of the expression and scalar
+// E - type of expression for division
+// V - type of scalar for division
+template<typename T, typename E, typename V>
+class ScalarDivision : public MatrixExpression<T, ScalarDivision<T, E, V>> {
+private:
+    std::conditional_t<E::has_data, const E&, E> expression;
+    V val;
+
+public:
+    // access element in i-th row and j-th column of matrix obtained by evaluating division of the expression by scalar
+    T operator[](std::size_t i, std::size_t j) const;
+
+    // getting size of matrix obtained by evaluating division of the expression by scalar
+    std::size_t get_n() const;
+    std::size_t get_m() const;
+
+    ScalarDivision(const MatrixExpression<T, E> &expression, V val);
 };
 
 // expression operations functions //
@@ -155,6 +176,9 @@ ScalarProduct<T, E, T> operator*(const MatrixExpression<T, E> &expression, T val
 
 template<typename T, typename E>
 ScalarProduct<T, E, T> operator*(T val, const MatrixExpression<T, E> &expression);
+
+template<typename T, typename E>
+ScalarDivision<T, E, T> operator/(T val, const MatrixExpression<T, E> &expression);
 
 template<typename T, typename E>
 std::ostream& operator<<(std::ostream &ostream, const MatrixExpression<T, E> &matrix);
