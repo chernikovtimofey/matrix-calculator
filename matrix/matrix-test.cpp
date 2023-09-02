@@ -3,6 +3,9 @@
 #include "matrix.h"
 
 void ConstSubmatrix_test() {
+    std::cout << "ConstSubmatrix test";
+    std::cout << '\n' << '\n';
+
     auto data = std::vector<std::vector<double>>(10, std::vector<double>(5));
     for (int i = 0; i < data.size(); ++i) {
         for (int j = 0; j < data[0].size(); ++j) {
@@ -16,15 +19,18 @@ void ConstSubmatrix_test() {
     std::cout << '\n' << '\n';
 
     std::cout << "matrix[2:7]:" << '\n';
-    std::cout << ConstSubmatrix(data, Slice(2, 7));
+    std::cout << ConstSubmatrix(data, Slice(2,7));
 
     std::cout << '\n' << '\n';
 
     std::cout << "matrix[3:8, 0:4]:" << '\n';
-    std::cout << ConstSubmatrix(data, Slice(3, 8), Slice(0, 4));
+    std::cout << ConstSubmatrix(data, Slice(3,8), Slice(0,4));
 }
 
 void arithmetic_test() {
+    std::cout << "arithmetic test";
+    std::cout << '\n' << '\n';
+
     auto data = std::vector<std::vector<double>>(10, std::vector<double>(5));
     for (int i = 0; i < data.size(); ++i) {
         for (int j = 0; j < data[0].size(); ++j) {
@@ -33,11 +39,11 @@ void arithmetic_test() {
     }
 
     std::cout << "m1:" << '\n';
-    auto m1 = ConstSubmatrix(data, Slice(0, 5));
+    auto m1 = ConstSubmatrix(data, Slice(0,5));
     std::cout << m1;
     std::cout << '\n' << '\n';
     std::cout << "m2:" << '\n';
-    auto m2 = ConstSubmatrix(data, Slice(5, 10));
+    auto m2 = ConstSubmatrix(data, Slice(5,10));
     std::cout << m2;
     std::cout << '\n' << '\n';
     std::cout << "-m1:" << '\n';
@@ -63,6 +69,9 @@ void arithmetic_test() {
 }
 
 void Submatrix_test() {
+    std::cout << "submatrix test";
+    std::cout << '\n' << '\n';
+
     auto data = std::vector<std::vector<double>>(10, std::vector<double>(5));
     for (int i = 0; i < data.size(); ++i) {
         for (int j = 0; j < data[0].size(); ++j) {
@@ -74,24 +83,19 @@ void Submatrix_test() {
     std::cout << "matrix:" << '\n';
     std::cout << matrix;
     std::cout << '\n' << '\n';
-    Submatrix(data, Slice(1, 7)) += Submatrix(data, Slice(3, 9));
+    Submatrix(data, Slice(1,7)) += Submatrix(data, Slice(3,9));
     std::cout << "matrix[1:7] += matrix[3:9]:" <<'\n';
     std::cout << matrix;
     std::cout <<'\n' << '\n';
-    Submatrix(data, Slice(0, matrix.get_n()), Slice(2, 5)) -= Submatrix(data, Slice(0, matrix.get_n()), Slice(0, 3));
+    Submatrix(data, Slice(0, matrix.n()), Slice(2,5)) -= Submatrix(data, Slice(0, matrix.n()), Slice(0,3));
     std::cout << "matrix[:, 2:5] -= matrix[:, 0:3]:" << '\n';
-    std::cout << matrix;
-    std::cout << '\n' << '\n';
-    Submatrix(data, Slice(0, 5), Slice(0, 5)) *= Submatrix(data, Slice(0, 5), Slice(0, 5));
-    std::cout << "matrix[0:5, :] *= matrix[0:5, :]" << '\n';
-    std::cout << matrix;
-    std::cout << '\n' << '\n';
-    Submatrix(data, Slice(0, 1)) *= 0.5;
-    std::cout << "matrix[0:1] *= 0.5:" << '\n';
     std::cout << matrix;
 }
 
 void Matrix_test() {
+    std::cout << "matrix test";
+    std::cout << '\n' << '\n';
+
     Matrix<double> matrix;
     std::ifstream file;
     file.open("../matrix/matrix.txt", std::ios::out);
@@ -102,7 +106,7 @@ void Matrix_test() {
     std::cout << matrix;
     std::cout << '\n' << '\n';
     matrix[2] = matrix[3];
-    std::cout << "matrix[2] = 3:" << '\n';
+    std::cout << "matrix[2] = matrix[3]:" << '\n';
     std::cout << matrix;
     std::cout << '\n' << '\n';
     matrix[Slice(2, 4)] += matrix[Slice(3, 5)];
@@ -116,14 +120,6 @@ void Matrix_test() {
     Matrix square_matrix = matrix[Slice(0, 5), Slice(0, 5)];
     std::cout << "square_matrix:" << '\n';
     std::cout << square_matrix;
-    std::cout << '\n' << '\n';
-    square_matrix *= square_matrix;
-    std::cout << "square_matrix *= square_matrix:" << '\n';
-    std::cout << square_matrix;
-    std::cout << '\n' << '\n';
-    matrix[Slice(3, 7), Slice(1, 4)] *= 4.9;
-    std::cout << "matrix[3:7, 1:4] *= 4.9:" << '\n';
-    std::cout << matrix;
 }
 
 int main() {

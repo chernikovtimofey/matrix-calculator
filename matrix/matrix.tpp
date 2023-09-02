@@ -8,7 +8,7 @@ start(start_), end(end_) {}
 
 template<typename Cont, typename E>
 AbstractSubmatrix<Cont, E>::value_type AbstractSubmatrix<Cont, E>::operator[](std::size_t i, std::size_t j) const {
-    if (i >= get_n() || j >= get_m()) {
+    if (i >= n() || j >= m()) {
         throw std::out_of_range("attempt to access outside of the bounds");
     }
     return data[i + n_start()][j + m_start()];
@@ -20,12 +20,12 @@ AbstractSubmatrix<Cont, E> AbstractSubmatrix<Cont, E>::operator=(const AbstractS
 }
 
 template<typename Cont, typename E>
-std::size_t AbstractSubmatrix<Cont, E>::get_n() const {
+std::size_t AbstractSubmatrix<Cont, E>::n() const {
     return n_slice.end - n_slice.start;
 }
 
 template<typename Cont, typename E>
-std::size_t AbstractSubmatrix<Cont, E>::get_m() const {
+std::size_t AbstractSubmatrix<Cont, E>::m() const {
     return m_slice.end - m_slice.start;
 }
 
@@ -44,6 +44,10 @@ std::size_t AbstractSubmatrix<Cont, E>::m_start() const {
     return m_slice.start;
 }
 
+template<typename Cont, typename E>
+std::size_t AbstractSubmatrix<Cont, E>::m_end() const {
+    return m_slice.end;
+}
 
 template<typename Cont, typename E>
 AbstractSubmatrix<Cont, E>::AbstractSubmatrix(Cont &data_) : AbstractSubmatrix(data_, Slice(0, data_.size())) {}
@@ -51,7 +55,10 @@ AbstractSubmatrix<Cont, E>::AbstractSubmatrix(Cont &data_) : AbstractSubmatrix(d
 template<typename Cont, typename E>
 AbstractSubmatrix<Cont, E>::AbstractSubmatrix(Cont &data_, Slice n_slice_) :
 data(data_), n_slice(n_slice_) {
-    if (data.empty()) {
+    if (data.size() < n_end()) {
+        throw std::invalid_argument("row slice out of bounds of matri");
+    }
+    else if (data.empty()) {
         n_slice = Slice();
         m_slice = Slice();
     }
@@ -62,7 +69,11 @@ data(data_), n_slice(n_slice_) {
 
 template<typename Cont, typename E>
 AbstractSubmatrix<Cont, E>::AbstractSubmatrix(Cont &data_, Slice n_slice_, Slice m_slice_) :
-data(data_), n_slice(n_slice_), m_slice(m_slice_) {}
+data(data_), n_slice(n_slice_), m_slice(m_slice_) {
+    if (data.size() < n_end() || (!data.empty() && data[0].size() < m_end())) {
+        throw std::invalid_argument("bounds of submatrix inappropriate for this data");
+    }
+}
 
 // ConstSubmatrix constructors deduction guide //
 
@@ -79,7 +90,7 @@ ConstSubmatrix(Cont &data, Slice n_slice, Slice m_slice) -> ConstSubmatrix<typen
 
 template<typename T1>
 T1& Submatrix<T1>::operator[](std::size_t i, std::size_t j) {
-    if (i >= this->get_n() || j >= this->get_m()) {
+    if (i >= this->n() || j >= this->m()) {
         throw std::out_of_range("attempt to access outside of the bounds");
     }
     return this->data[i + this->n_start()][j + this->m_start()];
@@ -91,16 +102,16 @@ Submatrix<T1> Submatrix<T1>::operator=(const MatrixExpression<T2, E2> &other) {
     check_n(*this, other);
     check_m(*this, other);
 
-    std::vector<std::vector<T1>> result = std::vector<std::vector<T1>>(this->get_n(), std::vector<T1>(this->get_m()));
-    for (int i = 0; i < this->get_n(); ++i) {
-        for (int j = 0; j < this->get_m(); ++j) {
-            result[i][j] = other[i, j];
+    std::vector<std::vector<T1>> result = std::vector<std::vector<T1>>(this->n(), std::vector<T1>(this->m()));
+    for (int i = 0; i < this->n(); ++i) {
+        for (int j = 0; j < this->m(); ++j) {
+            result[i][j] = other[i,j];
         }
     }
 
-    for (int i = 0; i < this->get_n(); ++i) {
-        for (int j = 0; j < this->get_m(); ++j) {
-            (*this)[i, j] = result[i][j];
+    for (int i = 0; i < this->n(); ++i) {
+        for (int j = 0; j < this->m(); ++j) {
+            (*this)[i,j] = result[i][j];
         }
     }
     return *this;
@@ -117,17 +128,6 @@ template<typename T1>
 template<typename T2, typename E2>
 Submatrix<T1> Submatrix<T1>::operator-=(const MatrixExpression<T2, E2> &other) {
     *this = Subtraction<T1, AbstractSubmatrix<std::vector<std::vector<T1>>, Submatrix<T1>>, E2>(*this, other);
-    return *this;
-}
-
-template<typename T1>
-template<typename T2, typename E2>
-Submatrix<T1> Submatrix<T1>::operator*=(const MatrixExpression<T2, E2> &other) {
-    if (this->get_n() != this->get_m()) {
-        throw std::invalid_argument("operation *= available only for square matrix");
-    }
-
-    *this = Product<T1, AbstractSubmatrix<std::vector<std::vector<T1>>, Submatrix<T1>>, E2>(*this, other);
     return *this;
 }
 
@@ -168,22 +168,22 @@ T1& Matrix<T1>::operator[](std::size_t i, std::size_t j) {
 
 template<typename T1>
 ConstSubmatrix<T1> Matrix<T1>::operator[](std::size_t i) const {
-    return (*this)[Slice(i, i + 1), Slice(0, get_m())];
+    return (*this)[Slice(i, i+1), Slice(0, m())];
 }
 
 template<typename T1>
 Submatrix<T1> Matrix<T1>::operator[](std::size_t i) {
-    return (*this)[Slice(i, i + 1), Slice(0, get_m())];
+    return (*this)[Slice(i, i+1), Slice(0, m())];
 }
 
 template<typename T1>
 ConstSubmatrix<T1> Matrix<T1>::operator[](Slice n_slice) const {
-    return (*this)[n_slice, Slice(0, get_m())];
+    return (*this)[n_slice, Slice(0, m())];
 }
 
 template<typename T1>
 Submatrix<T1> Matrix<T1>::operator[](Slice n_slice) {
-    return (*this)[n_slice, Slice(0, get_m())];
+    return (*this)[n_slice, Slice(0, m())];
 }
 
 template<typename T1>
@@ -217,13 +217,13 @@ Submatrix<T1> Matrix<T1>::operator[](Slice n_slice, Slice m_slice) {
 }
 
 template<typename T1>
-std::size_t Matrix<T1>::get_n() const {
-    return n;
+std::size_t Matrix<T1>::n() const {
+    return N;
 }
 
 template<typename T1>
-std::size_t Matrix<T1>::get_m() const {
-    return m;
+std::size_t Matrix<T1>::m() const {
+    return M;
 }
 
 template<typename T1>
@@ -248,17 +248,6 @@ Matrix<T1>& Matrix<T1>::operator-=(const MatrixExpression<T2, E2> &other) {
 }
 
 template<typename T1>
-template<typename T2, typename E2>
-Matrix<T1>& Matrix<T1>::operator*=(const MatrixExpression<T2, E2> &other) {
-    if (n != m) {
-        throw std::invalid_argument("operation *= available only for square matrix");
-    }
-
-    *this = Product<T1, Matrix<T1>, E2>(*this, other);
-    return *this;
-}
-
-template<typename T1>
 Matrix<T1>& Matrix<T1>::operator*=(T1 val) {
     *this = *this * val;
     return *this;
@@ -277,25 +266,24 @@ template<typename T1>
 Matrix<T1>::Matrix(std::size_t size) : Matrix(size, size) {}
 
 template<typename T1>
-Matrix<T1>::Matrix(std::size_t row_count_, std::size_t column_count_)
-: n(row_count_), m(column_count_),
-  data(std::vector<std::vector<T1>>(n, std::vector<T1>(m))) {}
+Matrix<T1>::Matrix(std::size_t N_, std::size_t M_)
+: N(N_), M(M_), data(std::vector<std::vector<T1>>(n(), std::vector<T1>(m()))) {}
 
 template<typename T1>
-Matrix<T1>::Matrix(const std::vector<std::vector<T1>> &data_) : n(data.size()), data(data_) {
-    m = (data.empty() ? 0 : data[0].size());
+Matrix<T1>::Matrix(const std::vector<std::vector<T1>> &data_) : N(data.size()), data(data_) {
+    M = (data.empty() ? 0 : data[0].size());
 }
 
 template<typename T1>
 template<typename T2, typename E2>
-Matrix<T1>::Matrix(const MatrixExpression<T2, E2> &expression) : Matrix(expression.get_n(), expression.get_m()) {
-    (*this)[Slice(0, get_n()), Slice(0, get_m())] = expression;
+Matrix<T1>::Matrix(const MatrixExpression<T2, E2> &expression) : Matrix(expression.n(), expression.m()) {
+    (*this)[Slice(0, n()), Slice(0, m())] = expression;
 }
 
 template<typename Cont, typename E>
 Matrix(AbstractSubmatrix<Cont, E>) -> Matrix<typename AbstractSubmatrix<Cont, E>::value_type>;
 
-// non-member Matrix's functions implementation//
+// input function //
 
 template<typename T>
 std::istream& operator>>(std::istream &istream, Matrix<T> &matrix) {
