@@ -180,7 +180,7 @@ template<typename T, typename E, typename V>
 ScalarDivision<T, E, V>::ScalarDivision(const MatrixExpression<T, E> &expression_, V val_) :
 expression(static_cast<const E&>(expression_)), val(val_) {}
 
-// expression operations functions implementation //
+// expression surface-operations functions implementation //
 
 template<typename T, typename E>
 Negation<T, E> operator-(const MatrixExpression<T, E> &expression) {

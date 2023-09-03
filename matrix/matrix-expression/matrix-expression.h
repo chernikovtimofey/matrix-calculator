@@ -152,8 +152,8 @@ public:
     ScalarDivision(const MatrixExpression<T, E> &expression, V val);
 };
 
-// expression operations functions //
-// NOTE: for reasons of possibility of deduction of return type of operations,
+// expression surface-operations functions //
+// NOTE: for reasons of possibility of deduction of return type of surface-operations,
 // those functions can be used only with expressions/scalars with a same value_type
 
 template<typename T, typename E>

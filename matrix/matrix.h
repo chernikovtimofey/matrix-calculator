@@ -72,7 +72,7 @@ public:
     template<typename T2, typename E2>
     Submatrix operator=(const MatrixExpression<T2, E2> &other);
 
-    // operations which change matrix
+    // surface-operations which change matrix
     template<typename T2, typename E2>
     Submatrix operator+=(const MatrixExpression<T2, E2> &other);
 
@@ -133,7 +133,7 @@ public:
     template<typename T2, typename E2>
     Matrix& operator=(const MatrixExpression<T2, E2> &other);
 
-    // operations which change matrix
+    // surface-operations which change matrix
     template<typename T2, typename E2>
     Matrix& operator+=(const MatrixExpression<T2, E2> &other);
 
