@@ -20,21 +20,10 @@ Matrix<T> projection_matrix(Matrix<T> direction) {
 
 template<typename T>
 Matrix<T> reflection_matrix(Matrix<T> direction) {
+    direction = direction / T(norm(direction));
     auto orthogonal = Matrix<T>(2,1);
-
-    if (std::abs(direction[0,0]) < ZERO) {
-        orthogonal[0,0] = 1;
-    }
-    else if (std::abs(direction[1,0]) < ZERO) {
-        orthogonal[1,0] = 1;
-    }
-    else {
-        orthogonal[0,0] = T(1) / direction[0,0];
-        orthogonal[1,0] = -T(1) / direction[1,0];
-    }
-
-    direction /= T(norm(direction));
-    orthogonal /= T(norm(orthogonal));
+    orthogonal[0,0] = -direction[1,0];
+    orthogonal[1,0] = direction[0,0];
 
     return direction * conj(direction) - orthogonal * conj(orthogonal);
 }

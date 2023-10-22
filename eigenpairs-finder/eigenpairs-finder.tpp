@@ -219,7 +219,7 @@ std::vector<std::pair<std::complex<T>, Matrix<std::complex<T>>>> eigenpairs(Matr
     auto result = std::vector<std::pair<std::complex<T>, Matrix<std::complex<T>>>>(matrix.n());
     for (int i = 0; i < matrix.n(); ++i) {
         auto eigenvalue = matrix[i, i];
-        Matrix<std::complex<T>> eigenvector = Q1 * (Q2 * schur_eigenvector(matrix, i)) ;
+        Matrix<std::complex<T>> eigenvector = Q1 * (Q2 * schur_eigenvector(matrix, i));
         result[i] = (std::make_pair(eigenvalue, eigenvector));
     }
 
