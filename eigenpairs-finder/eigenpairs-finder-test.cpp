@@ -49,6 +49,7 @@ void real_hessenberg_test() {
     file.close();
 
     matrix = matrix[Slice(0, matrix.m())];
+    Matrix<double> copy = matrix;
     std::cout << "matrix:" << '\n';
     std::cout << matrix;
     std::cout << '\n' << '\n';
@@ -64,6 +65,14 @@ void real_hessenberg_test() {
 
     std::cout << "QHQ*:" << '\n';
     std::cout << Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "error matrix:" << '\n';
+    std::cout << copy - Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "L2 norm of error matrix:" << '\n';
+    std::cout << m_norm(copy - Q * matrix * conj(Q));
 }
 
 void complex_hessenberg_test() {
@@ -75,6 +84,7 @@ void complex_hessenberg_test() {
     file.open("../matrix/complex_matrix.txt");
     file >> matrix;
     file.close();
+    Matrix<std::complex<double>> copy = matrix;
 
     std::cout << "matrix:" << '\n';
     std::cout << matrix;
@@ -91,6 +101,14 @@ void complex_hessenberg_test() {
 
     std::cout << "QHQ*:" << '\n';
     std::cout << Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "error matrix:" << '\n';
+    std::cout << copy - Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "L2 norm of error matrix:" << '\n';
+    std::cout << m_norm(copy - Q * matrix * conj(Q));
 }
 
 void QR_step_test() {
@@ -104,6 +122,7 @@ void QR_step_test() {
     file.close();
 
     hessenberg(matrix);
+    Matrix<std::complex<double>> copy = matrix;
 
     std::cout << "matrix:" << '\n';
     std::cout << matrix;
@@ -120,6 +139,14 @@ void QR_step_test() {
 
     std::cout << "QHQ*:" << '\n';
     std::cout << Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "error matrix:" << '\n';
+    std::cout << copy - Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "L2 norm of error matrix:" << '\n';
+    std::cout << m_norm(copy - Q * matrix * conj(Q));
 }
 
 void complex_schur_real_test() {
@@ -134,6 +161,7 @@ void complex_schur_real_test() {
 
     matrix = matrix[Slice(0,4), Slice(0,4)];
     hessenberg(matrix);
+    Matrix<std::complex<double>> copy = matrix;
 
     std::cout << "matrix:" << '\n';
     std::cout << matrix;
@@ -151,6 +179,14 @@ void complex_schur_real_test() {
 
     std::cout << "QTQ*:" << '\n';
     std::cout << Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "error matrix:" << '\n';
+    std::cout << copy - Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "L2 norm of error matrix:" << '\n';
+    std::cout << m_norm(copy - Q * matrix * conj(Q));
 }
 
 void complex_schur_complex_test() {
@@ -164,6 +200,7 @@ void complex_schur_complex_test() {
     file.close();
 
     hessenberg(matrix);
+    Matrix<std::complex<double>> copy = matrix;
 
     std::cout << "matrix:" << '\n';
     std::cout << matrix;
@@ -180,6 +217,14 @@ void complex_schur_complex_test() {
 
     std::cout << "QTQ*:" << '\n';
     std::cout << Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "error matrix:" << '\n';
+    std::cout << copy - Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "L2 norm of error matrix:" << '\n';
+    std::cout << m_norm(copy - Q * matrix * conj(Q));
 }
 
 void complex_schur_eigenvector_real_test() {
@@ -330,6 +375,7 @@ void real_schur_test() {
     file.close();
 
     hessenberg(matrix);
+    Matrix<double> copy = matrix;
 
     std::cout << "matrix:" << '\n';
     std::cout << matrix;
@@ -346,6 +392,14 @@ void real_schur_test() {
 
     std::cout << "QTQ*:" << '\n';
     std::cout << Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "error matrix:" << '\n';
+    std::cout << copy - Q * matrix * conj(Q);
+    std::cout << '\n' << '\n';
+
+    std::cout << "L2 norm of error matrix:" << '\n';
+    std::cout << m_norm(copy - Q * matrix * conj(Q));
 }
 
 int main() {

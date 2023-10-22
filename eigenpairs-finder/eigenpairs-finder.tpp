@@ -31,12 +31,12 @@ expression(static_cast<const E&>(expression_)) {}
 double conj(double val) { return val; }
 
 template<typename T, typename E>
-Conjugation<T, E> conj(const MatrixExpression<T, E> & expression) {
+Conjugation<T, E> conj(const MatrixExpression<T, E> &expression) {
     return Conjugation<T, E>(expression);
 }
 
 template<typename T, typename E>
-double norm(const MatrixExpression<T, E>& vector) {
+double norm(const MatrixExpression<T, E> &vector) {
     if (vector.m() != 1) {
         throw std::invalid_argument("2-norm can be calculated for vectors only");
     }
@@ -46,6 +46,18 @@ double norm(const MatrixExpression<T, E>& vector) {
         square_sum += std::abs<double>(vector[i,0]) * std::abs<double>(vector[i,0]);
     }
     return std::sqrt(square_sum);
+}
+
+template<typename T, typename E>
+double m_norm(const MatrixExpression<T, E> &matrix) {
+    double sum = 0;
+    for (int i = 0; i < matrix.n(); ++i) {
+        for (int j = 0; j < matrix.m(); ++j) {
+            double abs_el = std::abs(matrix[i, j]);
+            sum += abs_el * abs_el;
+        }
+    }
+    return std::sqrt(sum);
 }
 
 template<typename T>

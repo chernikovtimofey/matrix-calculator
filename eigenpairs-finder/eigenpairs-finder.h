@@ -34,6 +34,10 @@ Conjugation<T, E> conj(const MatrixExpression<T, E> & expression);
 template<typename T, typename E>
 double norm(const MatrixExpression<T, E> &vector);
 
+// L2-norm of matrix
+template<typename T, typename E>
+double m_norm(const MatrixExpression<T, E> &matrix);
+
 // returns identity matrix of size "size"
 template<typename T>
 Matrix<T> identity(std::size_t size);
